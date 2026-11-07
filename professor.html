@@ -1,0 +1,63 @@
+<!doctype html>
+<!-- Tutor de Percussão e FM — © 2026 Nuno Freitas. Todos os direitos reservados. Software proprietário. Ref. TPA-NF-2026-7c41e9 -->
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="copyright" content="© 2026 Nuno Freitas. Todos os direitos reservados.">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Portal do Professor · Tutor de Percussão e FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+@font-face{font-family:"TP Display";src:url(fonts/display-700.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"TP Display";src:url(fonts/display-800.woff2) format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"TP Body";src:url(fonts/body-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"TP Body";src:url(fonts/body-700.woff2) format("woff2");font-weight:700;font-display:swap}
+/* Layout: consola de trabalho do professor — cabeçalho com separadores, lista de sessões à esquerda e detalhe à direita em ecrã largo */
+:root{--bg:#F1F2F0;--surface:#FFFFFF;--sunk:#E6E8E5;--ink:#1A1C1E;--muted:#5D6369;--line:#D1D5D2;--wood:#8C3A28;--brass:#9A6F12;--brass-soft:#F5EBD3;--ok:#1E7A4C;--ok-soft:#DCF1E5;--warn:#A35F00;--warn-soft:#FAEAD1;--bad:#B42335;--bad-soft:#F8DDE1;
+  --f-display:"TP Display","Avenir Next","Segoe UI",Roboto,sans-serif;--f-body:"TP Body",Roboto,"Segoe UI",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#121416;--surface:#1B1E21;--sunk:#25292D;--ink:#ECEEEF;--muted:#A3A9AF;--line:#343A3F;--wood:#E3866B;--brass:#E3BA5C;--brass-soft:#352C18;--ok:#5CCB8F;--ok-soft:#163326;--warn:#F1AB4B;--warn-soft:#3A2A13;--bad:#F37481;--bad-soft:#3D1C22;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.hd{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-block:12px}
+.hd h1{margin:0 auto 0 0;font-family:var(--f-display);font-weight:800;font-size:1.35rem}
+.hd h1 small{display:block;font-family:var(--f-body);font-weight:400;font-size:.8rem;color:var(--muted)}
+nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px}nav button{border:0;background:transparent;font:inherit;font-weight:700;color:var(--muted);padding:8px 14px;border-radius:999px;cursor:pointer}nav button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+main{padding-block:18px 60px}
+h2,h3{font-family:var(--f-display);margin:0;line-height:1.15}h2{font-size:1.25rem}h3{font-size:1.02rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.stack{display:grid;gap:12px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.cols{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:16px;align-items:start}@media (max-width:820px){.cols{grid-template-columns:1fr}}
+button,.btn{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:8px 14px;min-height:42px;cursor:pointer}
+button.primary{background:var(--wood);border-color:var(--wood);color:#fff}@media (prefers-color-scheme:dark){button.primary{color:#141414}}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:42px}
+label.f{display:grid;gap:4px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.muted{color:var(--muted)}.num{font-variant-numeric:tabular-nums}
+.chip{display:inline-flex;gap:6px;align-items:center;border-radius:999px;padding:3px 10px;font-size:.82rem;font-weight:700;background:var(--sunk)}.chip.ok{background:var(--ok-soft);color:var(--ok)}.chip.warn{background:var(--warn-soft);color:var(--warn)}.chip.bad{background:var(--bad-soft);color:var(--bad)}.chip.brass{background:var(--brass-soft);color:var(--brass)}
+.sess{display:grid;gap:2px;text-align:left;width:100%;border-radius:10px;padding:10px 12px;font-weight:400}
+.sess[aria-pressed="true"]{border-color:var(--wood);box-shadow:inset 3px 0 0 var(--wood)}
+.it{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px}
+.it:first-child{border-top:0;padding-top:0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}td.n{text-align:right;font-variant-numeric:tabular-nums}
+.tw{overflow-x:auto}.stand{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px;overflow-x:auto}
+.score svg [fill="#000"],.score svg [fill="black"],.score svg [fill="#000000"]{fill:var(--ink)}.score svg [stroke="#000"],.score svg [stroke="black"],.score svg [stroke="#000000"]{stroke:var(--ink)}.score svg text:not([fill]){fill:var(--ink)}
+.big{font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:10px;font-weight:700;z-index:30}
+.cego .appsc{display:none!important}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}.list{display:grid;gap:8px}.item{display:flex;gap:10px;align-items:center;justify-content:space-between;border:2px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--surface,#fff);min-width:0;font:inherit;color:inherit;cursor:pointer}.item .t{display:grid;min-width:0}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="hd"><h1>Portal do Professor<small id="who">Tutor de Percussão e FM</small></h1><button id="bLink" type="button" hidden title="Copia um link que já entra sozinho no portal (para enviar só ao professor)">🔗 Link para o professor</button><button id="bRefresh" type="button">Atualizar</button><button id="bOut" type="button">Sair</button></div>
+<nav id="tabs" hidden><button data-t="entregas" aria-pressed="true">Entregas</button><button data-t="sessoes">Sessões</button><button data-t="trabalho">Trabalho para a aula</button><button data-t="programa">Programa da prova</button><button data-t="pecas">Peças</button><button data-t="faixas">Acompanhamentos</button><button data-t="validacao">Validação</button><button data-t="auditoria">Auditoria</button><button data-t="metodo">Metodologia</button></nav></div></header>
+<main class="wrap" id="main"></main>
+<script src="lib/vexflow.js"></script>
+<script src="core.js"></script>
+<script src="musicxml.js"></script>
+<script src="metodo.js"></script>
+<script src="professor.js"></script>
+</body>
+</html>

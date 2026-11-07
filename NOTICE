@@ -1,0 +1,8 @@
+Tutor de Percussão e FM — © 2026 Nuno Freitas. Todos os direitos reservados.
+
+Componentes de terceiros incluídos (cada um sob a sua própria licença):
+- PDF.js (lib/pdf.min.js, lib/pdf.worker.min.js) — © Mozilla Foundation — Apache License 2.0
+- VexFlow (lib/vexflow.js) — © Mohit Muthanna Cheppudira e contribuidores — MIT License
+- Tipos de letra (fonts/*.woff2) — licenças abertas dos respetivos autores
+
+A licença destes componentes aplica-se apenas a eles e não ao resto da aplicação.

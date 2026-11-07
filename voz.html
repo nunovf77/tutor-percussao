@@ -1,0 +1,84 @@
+<!doctype html>
+<!-- Tutor de Percussão e FM — © 2026 Nuno Freitas. Todos os direitos reservados. Software proprietário. Ref. TPA-NF-2026-7c41e9 -->
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="copyright" content="© 2026 Nuno Freitas. Todos os direitos reservados.">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Voz do pai · Tutor de Percussão e FM</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+@font-face{font-family:"TP Display";src:url(fonts/display-800.woff2) format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"TP Body";src:url(fonts/body-400.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"TP Body";src:url(fonts/body-700.woff2) format("woff2");font-weight:700;font-display:swap}
+/* Layout: estúdio de gravação simples — cabeçalho com progresso, teleponto grande em sequência, lista de frases por grupo */
+:root{--bg:#F1F2F0;--surface:#FFFFFF;--sunk:#E6E8E5;--ink:#1A1C1E;--muted:#5D6369;--line:#D1D5D2;--wood:#8C3A28;--ok:#1E7A4C;--ok-soft:#DCF1E5;--bad:#B42335;--bad-soft:#F8DDE1;
+  --f-display:"TP Display","Avenir Next","Segoe UI",Roboto,sans-serif;--f-body:"TP Body",Roboto,"Segoe UI",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#121416;--surface:#1B1E21;--sunk:#25292D;--ink:#ECEEEF;--muted:#A3A9AF;--line:#343A3F;--wood:#E3866B;--ok:#5CCB8F;--ok-soft:#163326;--bad:#F37481;--bad-soft:#3D1C22;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5}
+.wrap{max-width:820px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 80px max(16px,env(safe-area-inset-left,0px))}
+h1,h2{font-family:var(--f-display);margin:0;line-height:1.15}h1{font-size:1.6rem}h2{font-size:1.15rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.muted{color:var(--muted)}.num{font-variant-numeric:tabular-nums}
+button{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:8px 14px;min-height:44px;cursor:pointer}
+button.primary{background:var(--wood);border-color:var(--wood);color:#fff}button.small{min-height:36px;padding:4px 10px;font-size:.9rem}button:disabled{opacity:.5}
+input{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:44px;width:100%}
+label{display:grid;gap:4px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.it{display:flex;gap:8px;align-items:center;border-top:1px solid var(--line);padding:8px 0}.it span.t{flex:1;min-width:0}
+.bar{flex:1;height:10px;border-radius:6px;background:var(--sunk);overflow:hidden;min-width:120px}.bar i{display:block;height:100%;background:var(--ok)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:grid;place-items:center;padding:16px;z-index:9}
+.sheet{background:var(--surface);border-radius:18px;padding:22px;width:min(560px,100%);text-align:center;display:grid;gap:12px}
+.tele{font-family:var(--f-display);font-size:2rem;line-height:1.2;margin:10px 0}
+.msg{border-radius:12px;padding:10px 14px;font-weight:700}.msg.ok{background:var(--ok-soft);color:var(--ok)}.msg.bad{background:var(--bad-soft);color:var(--bad)}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script src="fm-dados.js"></script>
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+const CFGK="tpv:cfg";let CFG=(()=>{try{return JSON.parse(localStorage.getItem(CFGK)||"null")}catch(e){return null}})();
+(()=>{const h=new URLSearchParams(location.hash.slice(1));if(h.get("u")&&h.get("k")){CFG={u:h.get("u"),k:h.get("k")};try{localStorage.setItem(CFGK,JSON.stringify(CFG))}catch(e){}history.replaceState(null,"",location.pathname)}})();
+async function api(body){const r=await fetch(CFG.u,{method:"POST",body:JSON.stringify({...body,token:CFG.k}),redirect:"follow"});const j=await r.json();if(!j.ok)throw new Error(j.err||"erro");return j}
+const ALL=VOZ_GUIAO.flatMap(g=>g[1]);let SRV={};const CACHE={};
+const b64=b=>new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(String(fr.result).split(",")[1]);fr.readAsDataURL(b)});
+const unb64=(s,m)=>{const bin=atob(s);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:m})};
+function login(err){$("#app").innerHTML=`<h1>Voz do pai</h1><div class="card" style="display:grid;gap:12px"><p>Grava aqui, em qualquer aparelho, as frases do tutor. Ficam no teu Drive (pasta «Tutor de Percussão e FM / Voz do pai») e o tablet da Inês descarrega-as sozinho.</p>
+  <label>Endereço do servidor (termina em /exec)<input id="lu" type="url" value="${esc(CFG&&CFG.u||"")}"></label><label>Código do TABLET<input id="lk" type="password" value="${esc(CFG&&CFG.k||"")}"></label>${err?`<div class="msg bad">${esc(err)}</div>`:""}<button class="primary" id="lgo">Entrar</button></div>`;
+  $("#lgo").onclick=async()=>{CFG={u:$("#lu").value.trim(),k:$("#lk").value.trim()};try{await api({type:"ping"});localStorage.setItem(CFGK,JSON.stringify(CFG));main()}catch(e){login("Não consegui ligar: confirma o endereço e o código do tablet.")}}}
+async function main(){if(!CFG||!CFG.u||!CFG.k)return login();$("#app").innerHTML=`<h1>Voz do pai</h1><p class="muted">A ligar ao servidor…</p>`;
+  try{const j=await api({type:"voz_list"});SRV={};j.items.forEach(x=>SRV[x.id]=x)}catch(e){return login(e.message==="type"?"O servidor ainda é a versão antiga: substitui o Code.gs pela versão 3.2 e faz nova implementação.":"Não consegui ligar ao servidor.")}render()}
+function render(){const n=ALL.filter(([id])=>SRV[id]).length;
+  $("#app").innerHTML=`<div class="row" style="justify-content:space-between"><h1>Voz do pai</h1><button class="small" id="out">Sair</button></div>
+   <div class="card" style="display:grid;gap:10px"><p>Uma frase de cada vez: <b>● Gravar</b>, dizes a frase, <b>■ Parar</b>, ouves e guardas. Meio segundo de silêncio antes e depois. Números, notas e palavras soltas em tom neutro (vão ser juntas a outras frases).</p>
+    <div class="row"><b class="num">${n}/${ALL.length} no servidor</b><div class="bar"><i style="width:${n/ALL.length*100}%"></i></div></div>
+    <div class="row"><button class="primary" id="seq" ${n===ALL.length?"disabled":""}>🎙 Gravar as que faltam, em sequência</button></div></div>
+   <div class="card" style="display:grid;gap:8px"><h2>Link da app para a Inês (e para a mãe)</h2><p class="muted">Já leva o teu servidor: ao abrir, a app fica ligada, descarrega a tua voz e passa a enviar os resultados. Envia só à família.</p>
+    <div class="row"><input id="applink" readonly value="${esc(appLink())}" style="flex:1;min-width:0"><button class="small" id="cp">Copiar</button></div>
+    <h2 style="margin-top:8px">Link para o professor</h2><p class="muted">O do professor usa outro código (o do PROFESSOR, em Apps Script → Definições do projeto → Propriedades do script → TEACHER): <code>…/professor.html#u=…&amp;k=CÓDIGO_PROFESSOR</code></p></div>
+   ${VOZ_GUIAO.map(([g,ps])=>`<div class="card"><h2>${esc(g)}</h2>${ps.map(([id,t])=>`<div class="it"><span style="width:20px">${SRV[id]?"✓":"·"}</span><span class="t">${esc(t)}</span><button class="small" data-rec="${id}">● Gravar</button>${SRV[id]?`<button class="small" data-play="${id}">▶</button><button class="small" data-del="${id}">🗑</button>`:""}</div>`).join("")}</div>`).join("")}`;
+  $("#cp").onclick=()=>{const i=$("#applink");(navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).then(()=>{$("#cp").textContent="Copiado ✓"}).catch(()=>{i.select();document.execCommand&&document.execCommand("copy");$("#cp").textContent="Copiado ✓"})};
+  $("#out").onclick=()=>{localStorage.removeItem(CFGK);CFG=null;login()};$("#seq").onclick=()=>rec(ALL.filter(([id])=>!SRV[id]).map(x=>x[0]));
+  $$("[data-rec]").forEach(b=>b.onclick=()=>rec([b.dataset.rec]));
+  $$("[data-play]").forEach(b=>b.onclick=async()=>{const id=b.dataset.play;try{if(!CACHE[id]){const j=await api({type:"voz_get",ids:[id]});const x=j.items[0];CACHE[id]=unb64(x.b64,x.mime)}new Audio(URL.createObjectURL(CACHE[id])).play()}catch(e){alertBox("Não consegui ouvir esta frase.")}});
+  $$("[data-del]").forEach(b=>b.onclick=async()=>{await api({type:"voz_del",id:b.dataset.del}).catch(()=>{});delete SRV[b.dataset.del];render()})}
+function appLink(){return location.origin+location.pathname.replace(/voz\.html$/,"")+"#u="+encodeURIComponent(CFG.u)+"&k="+encodeURIComponent(CFG.k)}
+function alertBox(t){const m=document.createElement("div");m.className="modal";m.innerHTML=`<div class="sheet"><p>${esc(t)}</p><button class="primary">OK</button></div>`;document.body.appendChild(m);$("button",m).onclick=()=>m.remove()}
+async function rec(ids){if(!ids.length)return;let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}catch(e){return alertBox("Sem acesso ao microfone. Autoriza o microfone para este site no navegador.")}
+  const mime=["audio/webm;codecs=opus","audio/mp4","audio/ogg"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t))||"";let k=0;const m=document.createElement("div");m.className="modal";m.innerHTML=`<div class="sheet"></div>`;document.body.appendChild(m);const sh=$(".sheet",m);
+  const close=()=>{stream.getTracks().forEach(t=>t.stop());m.remove();render()};
+  const show=()=>{if(k>=ids.length)return close();const id=ids[k];sh.innerHTML=`<p class="muted">Frase ${k+1} de ${ids.length}</p><div class="tele">${esc(VOZ_TXT[id])}</div><button class="primary" id="vr" style="min-height:70px;font-size:1.2rem">● Gravar</button><div class="row" style="justify-content:center"><button id="vs">Saltar</button><button id="vc">Fechar</button></div>`;
+    $("#vs",sh).onclick=()=>{k++;show()};$("#vc",sh).onclick=close;
+    $("#vr",sh).onclick=()=>{const r=new MediaRecorder(stream,mime?{mimeType:mime}:{});const ch=[];r.ondataavailable=e=>e.data.size&&ch.push(e.data);const btn=$("#vr",sh);btn.textContent="■ Parar";btn.style.background="var(--bad)";btn.style.borderColor="var(--bad)";
+      const tm=setTimeout(()=>r.state==="recording"&&r.stop(),7000);btn.onclick=()=>{clearTimeout(tm);if(r.state==="recording")r.stop()};
+      r.onstop=()=>{const blob=new Blob(ch,{type:r.mimeType||mime||"audio/webm"});const url=URL.createObjectURL(blob);sh.innerHTML=`<p class="muted">Frase ${k+1} de ${ids.length}</p><div class="tele" style="font-size:1.5rem">${esc(VOZ_TXT[id])}</div><audio controls src="${url}" style="width:100%"></audio>
+          <div class="row" style="justify-content:center"><button id="va">Repetir</button><button class="primary" id="vk">Guardar e seguinte ▶</button></div><div id="vm"></div>`;new Audio(url).play().catch(()=>{});
+        $("#va",sh).onclick=show;$("#vk",sh).onclick=async()=>{const bt=$("#vk",sh);bt.disabled=true;bt.textContent="A enviar…";try{const j=await api({type:"voz_put",id,mime:blob.type,b64:await b64(blob)});SRV[id]={id,ts:j.ts};CACHE[id]=blob;k++;show()}catch(e){bt.disabled=false;bt.textContent="Tentar de novo";$("#vm",sh).innerHTML=`<div class="msg bad">Não enviou (${esc(e.message)}). Verifica a internet.</div>`}}};r.start()}};show()}
+main();
+</script>
+</body>
+</html>
